@@ -14,113 +14,15 @@
     --muted:#64748b;
     --accent:#2563eb;
   }
+  body.dark{
+    --bg:#0f172a;
+    --sidebar:#1e293b;
+    --border:#334155;
+    --text:#f1f5f9;
+    --muted:#94a3b8;
+    --accent:#38bdf8;
+  }
+
   *{box-sizing:border-box;margin:0;padding:0;font-family:Inter,system-ui,sans-serif;}
   body,html{height:100%;background:var(--bg);color:var(--text);}
-  .app{display:grid;grid-template-columns:260px 1fr;height:100vh;}
-  
-  /* Sidebar */
-  .sidebar{
-    background:var(--sidebar);
-    border-right:1px solid var(--border);
-    padding:20px;
-    display:flex;flex-direction:column;gap:20px;
-  }
-  .logo{font-weight:700;font-size:18px;color:var(--accent);}
-  .faq h4{font-size:14px;color:var(--muted);margin-bottom:6px;}
-  .faq li{list-style:none;padding:6px 0;font-size:14px;cursor:pointer;color:var(--text);}
-  .faq li:hover{color:var(--accent);}
-  
-  /* Chat area */
-  .chat{display:flex;flex-direction:column;height:100%;overflow:hidden;}
-  .chat-header{
-    padding:14px 20px;
-    border-bottom:1px solid var(--border);
-    font-weight:600;
-  }
-  .messages{
-    flex:1;overflow:auto;padding:20px 100px;
-    display:flex;flex-direction:column;gap:22px;
-  }
-  .q,.a{padding:18px;border-radius:12px;background:#fff;border:1px solid var(--border);}
-  .q{font-weight:600;}
-  .a{color:var(--text);font-size:15px;line-height:1.5;}
-  
-  /* Composer */
-  .composer{
-    padding:16px 20px;border-top:1px solid var(--border);
-    background:var(--sidebar);display:flex;gap:10px;
-  }
-  .composer input{
-    flex:1;padding:14px 18px;border-radius:999px;border:1px solid var(--border);
-    outline:none;font-size:15px;
-  }
-  .composer button{
-    padding:12px 20px;border-radius:999px;border:none;
-    background:var(--accent);color:#fff;font-weight:600;font-size:14px;cursor:pointer;
-  }
-  .composer button:hover{background:#1e40af;}
-  
-  @media(max-width:800px){
-    .app{grid-template-columns:1fr;}
-    .sidebar{display:none;}
-    .messages{padding:20px;}
-  }
-</style>
-</head>
-<body>
-<div class="app">
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="logo">Knowlege Bot</div>
-    <div class="faq">
-      <h4>FAQs</h4>
-      <ul>
-        <li>Admissions process</li>
-        <li>Exam schedule</li>
-        <li>Scholarships</li>
-        <li>Placements</li>
-      </ul>
-    </div>
-  </aside>
-  
-  <!-- Chat -->
-  <div class="chat">
-    <div class="chat-header">Ask me anything about DTE Rajasthan</div>
-    <div class="messages" id="messages">
-      <div class="q">What is the eligibility for diploma admissions?</div>
-      <div class="a">Eligibility usually requires passing 10th grade with minimum marks. Official notifications provide details each year.</div>
-    </div>
-    <div class="composer">
-      <input id="chatInput" type="text" placeholder="Ask a question..."/>
-      <button id="sendBtn">Send</button>
-    </div>
-  </div>
-</div>
-
-<script>
-const input=document.getElementById('chatInput');
-const btn=document.getElementById('sendBtn');
-const messages=document.getElementById('messages');
-
-btn.addEventListener('click',()=>{
-  const text=input.value.trim();
-  if(!text)return;
-  const q=document.createElement('div');
-  q.className='q'; q.textContent=text;
-  messages.appendChild(q);
-  messages.scrollTop=messages.scrollHeight;
-  input.value='';
-  
-  setTimeout(()=>{
-    const a=document.createElement('div');
-    a.className='a';
-    a.textContent="🤖 Demo answer. (Connect to OpenAI for real logic)";
-    messages.appendChild(a);
-    messages.scrollTop=messages.scrollHeight;
-  },600);
-});
-
-input.addEventListener('keydown',e=>{if(e.key==='Enter')btn.click();});
-</script>
-</body>
-</html>
+  .app{

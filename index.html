@@ -24,7 +24,8 @@
   }
 
   *{box-sizing:border-box;margin:0;padding:0;font-family:Inter,system-ui,sans-serif;}
-  body,html{height:100%;background:var(--bg);color:var(--text);}
+  body,html{height:100%;background:var(--bg);color:var(--text);
+    transition: background 0.3s ease, color 0.3s ease;}
   .app{display:grid;grid-template-columns:260px 1fr;height:100vh;}
   
   /* Sidebar */
@@ -33,6 +34,7 @@
     border-right:1px solid var(--border);
     padding:20px;
     display:flex;flex-direction:column;gap:20px;
+    transition: background 0.3s ease, border 0.3s ease;
   }
   .logo{font-weight:700;font-size:18px;color:var(--accent);}
   .faq h4{font-size:14px;color:var(--muted);margin-bottom:6px;}
@@ -46,12 +48,14 @@
     border-bottom:1px solid var(--border);
     font-weight:600;
     display:flex;justify-content:space-between;align-items:center;
+    transition: border 0.3s ease;
   }
   .messages{
     flex:1;overflow:auto;padding:20px 100px;
     display:flex;flex-direction:column;gap:22px;
   }
-  .q,.a{padding:18px;border-radius:12px;background:var(--sidebar);border:1px solid var(--border);}
+  .q,.a{padding:18px;border-radius:12px;background:var(--sidebar);border:1px solid var(--border);
+    transition: background 0.3s ease, border 0.3s ease;}
   .q{font-weight:600;}
   .a{color:var(--text);font-size:15px;line-height:1.5;}
   
@@ -59,14 +63,17 @@
   .composer{
     padding:16px 20px;border-top:1px solid var(--border);
     background:var(--sidebar);display:flex;gap:10px;
+    transition: background 0.3s ease, border 0.3s ease;
   }
   .composer input{
     flex:1;padding:14px 18px;border-radius:999px;border:1px solid var(--border);
     outline:none;font-size:15px;background:var(--bg);color:var(--text);
+    transition: background 0.3s ease, color 0.3s ease, border 0.3s ease;
   }
   .composer button{
     padding:12px 20px;border-radius:999px;border:none;
     background:var(--accent);color:#fff;font-weight:600;font-size:14px;cursor:pointer;
+    transition: background 0.3s ease;
   }
   .composer button:hover{opacity:0.9;}
   
@@ -74,6 +81,7 @@
   .toggle-btn{
     background:none;border:1px solid var(--border);border-radius:8px;
     padding:6px 12px;font-size:13px;color:var(--text);cursor:pointer;
+    transition: color 0.3s ease, border 0.3s ease;
   }
   .toggle-btn:hover{border-color:var(--accent);color:var(--accent);}
   
@@ -104,7 +112,7 @@
   <div class="chat">
     <div class="chat-header">
       <span>Ask me anything about DTE Rajasthan</span>
-      <button class="toggle-btn" id="modeToggle">🌙 Dark</button>
+      <button class="toggle-btn" id="modeToggle">☀️ Light</button>
     </div>
     <div class="messages" id="messages">
       <div class="q">What is the eligibility for diploma admissions?</div>
@@ -143,10 +151,15 @@ btn.addEventListener('click',()=>{
 
 input.addEventListener('keydown',e=>{if(e.key==='Enter')btn.click();});
 
-// Toggle light/dark mode
+// Toggle light/dark mode (shows current mode)
+function updateToggleText(){
+  toggle.textContent=document.body.classList.contains('dark')?"🌙 Dark":"☀️ Light";
+}
+updateToggleText();
+
 toggle.addEventListener('click',()=>{
   document.body.classList.toggle('dark');
-  toggle.textContent=document.body.classList.contains('dark')?"☀️ Light":"🌙 Dark";
+  updateToggleText();
 });
 </script>
 </body>

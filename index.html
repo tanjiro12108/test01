@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Knowlege Bot — Vibrant Chat UI</title>
+
+<style>
+  :root{
+    --bg:#0a0a1a;
+    --card:#101030;
+    --muted:#cbd5e1;
+    --accent1:#ff0080;   /* pink neon */
+    --accent2:#00f0ff;   /* cyan neon */
+    --bubble-user:#ff6ec7;
+    --bubble-bot:#262654;
+    --white:#ffffff;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;font-family:"Poppins",sans-serif;}
+  html,body{height:100%;background:radial-gradient(circle at top left,#0f172a,#0a0a1a);color:var(--white);}
+
+  .wrap{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+
+  .chat-card{
+    width:100%;
+    max-width:980px;
+    height:85vh;
+    background:linear-gradient(145deg,rgba(255,0,128,0.12),rgba(0,240,255,0.08));
+    border:2px solid rgba(255,255,255,0.15);
+    border-radius:20px;
+    display:grid;
+    grid-template-columns:280px 1fr;
+    overflow:hidden;
+    box-shadow:0 0 25px rgba(0,240,255,0.25), 0 0 40px rgba(255,0,128,0.15);
+    backdrop-filter:blur(8px);
+  }
+
+  .sidebar{
+    background:linear-gradient(180deg, rgba(255,0,128,0.08), rgba(0,240,255,0.05));
+    padding:22px;
+    border-right:2px solid rgba(255,255,255,0.1);
+  }
+  .logo{display:flex;gap:12px;align-items:center;margin-bottom:20px;}
+  .logo .mark{
+    width:60px;height:60px;border-radius:14px;
+    background:linear-gradient(135deg,var(--accent1),var(--accent2));
+    display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;
+    box-shadow:0 0 14px rgba(255,0,128,0.5),0 0 18px rgba(0,240,255,0.4);
+    animation: pulse 2s infinite alternate;
+  }
+  .logo h3{font-size:18px;line-height:1.2;color:#fff;text-shadow:0 0 6px rgba(0,240,255,0.6);}
+  .logo p{font-size:12px;color:var(--muted)}
+
+  @keyframes pulse{
+    from{transform:scale(1);}
+    to{transform:scale(1.08);}
+  }
+
+  .faq{font-size:13px;color:var(--muted)}
+  .faq h4{font-size:14px;color:#fff;margin-bottom:10px;text-shadow:0 0 6px rgba(255,0,128,0.6);}
+  .faq li{
+    margin:8px 0;list-style:none;padding:10px;border-radius:8px;
+    background:rgba(255,255,255,0.06);
+    cursor:pointer;transition:all 0.25s;
+  }
+  .faq li:hover{background:linear-gradient(135deg,rgba(255,0,128,0.3),rgba(0,240,255,0.3));color:#fff;}
+
+  .chat-main{display:flex;flex-direction:column;height:100%;}
+  .chat-header{
+    padding:18px 20px;border-bottom:2px solid rgba(255,255,255,0.1);
+    background:linear-gradient(90deg,var(--accent1)20%,var(--accent2)80%);
+    color:#fff;
+  }
+  .chat-header .title{font-weight:700;font-size:18px;}
+  .chat-header .sub{font-size:12px;color:#f1f5f9;opacity:0.9;}
+
+  .messages{
+    flex:1;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:14px;
+    background:radial-gradient(circle at center,rgba(255,0,128,0.04),rgba(0,240,255,0.02));
+  }
+
+  .msg{max-width:78%;padding:12px 16px;border-radius:16px;line-height:1.4;font-size:14px;}
+  .bot{align-self:flex-start;background:var(--bubble-bot);border:1px solid rgba(255,255,255,0.1);}
+  .bot small{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}
+  .user{align-self:flex-end;background:linear-gradient(135deg,var(--accent1),var(--accent2));
+    color:#0a0a1a;font-weight:600;border-bottom-right-radius:4px;box-shadow:0 0 14px rgba(255,0,128,0.5);}
+  .muted{font-size:12px;color:var(--muted);margin-top:6px}
+
+  .composer{
+    padding:14px;border-top:2px solid rgba(255,255,255,0.1);display:flex;gap:8px;align-items:center;
+    background:linear-gradient(90deg,rgba(255,0,128,0.15),rgba(0,240,255,0.15));
+  }
+  .composer input{
+    flex:1;padding:14px 16px;border-radius:999px;
+    border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);
+    color:#fff;outline:none;font-size:14px;
+  }
+  .composer button{
+    padding:12px 18px;border-radius:999px;border:none;
+    background:linear-gradient(135deg,var(--accent1),var(--accent2));
+    color:#0a0a1a;font-weight:700;cursor:pointer;
+    box-shadow:0 0 12px rgba(255,0,128,0.6),0 0 18px rgba(0,240,255,0.6);
+    transition:transform 0.15s;
+  }
+  .composer button:active{transform:scale(0.95)}
+
+  @media (max-width:880px){
+    .chat-card{grid-template-columns:1fr;height:90vh}
+    .sidebar{display:none}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="chat-card">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="logo">
+          <div class="mark">KB</div>
+          <div>
+            <h3>Knowlege Bot</h3>
+            <p>DTE Rajasthan</p>
+          </div>
+        </div>
+
+        <div class="faq">
+          <h4>?? Hackathon Quick Qs</h4>
+          <ul>
+            <li>How to apply for diploma admissions?</li>
+            <li>Where to check exam results?</li>
+            <li>Scholarship details?</li>
+            <li>Contact exam cell?</li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Chat -->
+      <section class="chat-main">
+        <header class="chat-header">
+          <div class="title">?? Knowlege Bot</div>
+          <div class="sub">Your vibrant AI student assistant</div>
+        </header>
+
+        <div class="messages" id="messages">
+          <div class="msg bot">
+            <small>Knowlege Bot</small>
+            Namaste! ?? I’m your hackathon buddy bot. Ask me anything about admissions, exams, or scholarships.
+          </div>
+          <div class="msg user">
+            Tell me about placements!
+          </div>
+          <div class="msg bot">
+            <small>Knowlege Bot</small>
+            Placements are handled by the Training & Placement Cell. They organize campus drives, workshops, and skill training.
+          </div>
+        </div>
+
+        <div class="composer">
+          <input id="chatInput" type="text" placeholder="Type your question..." />
+          <button id="sendBtn">Send ??</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+<script>
+const input=document.getElementById('chatInput');
+const btn=document.getElementById('sendBtn');
+const messages=document.getElementById('messages');
+
+function appendBubble(text,who='user'){
+  const el=document.createElement('div');
+  el.className='msg '+(who==='user'?'user':'bot');
+  el.innerHTML=(who==='bot'?'<small>Knowlege Bot</small>'+text:text);
+  messages.appendChild(el);
+  messages.scrollTop=messages.scrollHeight;
+}
+
+btn.addEventListener('click',()=>{
+  const t=input.value.trim();
+  if(!t)return;
+  appendBubble(t,'user');
+  input.value='';
+  setTimeout(()=>appendBubble('? Demo reply for hackathon. Connect me to AI for real answers!','bot'),800);
+});
+input.addEventListener('keydown',e=>{if(e.key==='Enter')btn.click();});
+</script>
+</body>
+</html>

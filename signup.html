@@ -78,9 +78,7 @@
 </head>
 <body>
   <h1>Sign Up</h1>
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, msg in messages %}
+  
         <div class="flash">{{ msg }}</div>
       {% endfor %}
     {% endif %}

@@ -78,14 +78,11 @@
 </head>
 <body>
   <h1>Sign Up</h1>
-
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, msg in messages %}
-        <div class="flash {{ category }}">{{ msg }}</div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
+    {% for category, msg in messages %}
+      <div class="flash {{ category }}">{{ msg }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
 
   <form method="post" action="{{ url_for('signup') }}">
     <label>Username<br><input name="username" required></label><br><br>

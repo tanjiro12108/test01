@@ -18,12 +18,26 @@
       margin-bottom: 25px;
     }
     .flash {
-      background: #ffe5e5;
-      color: #a94442;
-      border: 1px solid #a94442;
       padding: 10px 15px;
       margin-bottom: 15px;
       border-radius: 4px;
+      border: 1px solid transparent;
+      font-size: 15px;
+    }
+    .flash.error {
+      background: #ffe5e5;
+      color: #a94442;
+      border-color: #a94442;
+    }
+    .flash.success {
+      background: #e4ffe4;
+      color: #2d8a34;
+      border-color: #2d8a34;
+    }
+    .flash.info {
+      background: #e7f7ff;
+      color: #31708f;
+      border-color: #31708f;
     }
     form {
       background: #fff;
@@ -81,7 +95,7 @@
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
       {% for category, msg in messages %}
-        <div class="flash">{{ msg }}</div>
+        <div class="flash {{ category }}">{{ msg }}</div>
       {% endfor %}
     {% endif %}
   {% endwith %}

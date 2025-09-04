@@ -1,89 +1,45 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Sign Up</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: 40px auto;
-      background: #f9f9f9;
-      padding: 20px;
-      color: #333;
-    }
-    h1 {
-      text-align: center;
-      color: #222;
-      margin-bottom: 25px;
-    }
-    .flash {
-      background: #ffe5e5;
-      color: #a94442;
-      border: 1px solid #a94442;
-      padding: 10px 15px;
-      margin-bottom: 15px;
-      border-radius: 4px;
-    }
-    form {
-      background: #fff;
-      padding: 20px;
-      border-radius: 6px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    label {
-      font-weight: bold;
-      display: block;
-      margin-bottom: 8px;
-      color: #555;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      margin: 5px 0 20px 0;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 14px;
-    }
-    input:focus {
-      border-color: #007bff;
-      outline: none;
-      box-shadow: 0 0 5px rgba(0,123,255,0.3);
-    }
-    button {
-      background: #007bff;
-      color: white;
-      border: none;
-      padding: 12px 18px;
-      border-radius: 4px;
-      font-size: 15px;
-      cursor: pointer;
-      width: 100%;
-    }
-    button:hover {
-      background: #0056b3;
-    }
-    p {
-      text-align: center;
-      margin-top: 20px;
-    }
-    p a {
-      color: #007bff;
-      text-decoration: none;
-    }
-    p a:hover {
-      text-decoration: underline;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Signup | Travel Platform</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Sign Up</h1>
-  <form method="post" action="{{ url_for('signup') }}">
-    <label>Username<br><input name="username" required></label><br><br>
-    <label>Password<br><input name="password" type="password" required></label><br><br>
-    <button type="submit">Create account</button>
-  </form>
-  
-  <p>Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
+    <div class="signup-container">
+        <header>
+            <div class="logo">T</div>
+            <nav>
+                <a href="#">ACCOMMODATIONS</a>
+                <a href="#">FLIGHTS</a>
+                <a href="#">CAR RENTALS</a>
+                <a href="#">AIRPORT TAXIS</a>
+            </nav>
+            <div class="social-icons">
+                <span class="icon">f</span>
+                <span class="icon">t</span>
+                <span class="icon">in</span>
+                <span class="icon">m</span>
+            </div>
+        </header>
+        <main>
+            <div class="signup-form-box">
+                <h1>SIGN UP</h1>
+                <p>Create your account</p>
+                <form>
+                    <input type="text" placeholder="Full Name" required>
+                    <input type="email" placeholder="Email" required>
+                    <input type="password" placeholder="Password" required>
+                    <input type="password" placeholder="Confirm Password" required>
+                    <button type="submit">CREATE ACCOUNT</button>
+                </form>
+                <p class="login-link">Already have an account? <a href="#">Log in</a></p>
+            </div>
+            <div class="signup-visual">
+                <!-- For illustration only: replace with your image/graphics if needed -->
+                <div class="scooter-visual"></div>
+            </div>
+        </main>
+    </div>
 </body>
 </html>

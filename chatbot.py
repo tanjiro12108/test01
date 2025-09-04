@@ -1,125 +1,112 @@
-# File: chatbot_with_db.py
-
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
+from werkzeug.security import generate_password_hash, check_password_hash
 import os
-import sqlite3
-from datetime import datetime
-from openai import OpenAI
-from dotenv import load_dotenv
+import json
 
-# Load environment variables from .env file
-load_dotenv()
-api_key = os.getenv("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")
-if not api_key:
-    raise EnvironmentError("OPENAI_API_KEY not found in environment. Please set it in a .env file.")
+app = Flask(__name__)
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "change-this-secret")
 
-client = OpenAI(api_key=api_key)
+USERS_FILE = "users.json"
 
-# Database setup
-DB_FILE = "chatbot.db"
+# --- Simple chatbot stub ---
+def respond_to(message, username=None):
+    # Replace this stub with your existing chatbot logic.
+    # If your current chatbot.py already has a function to respond,
+    # import and call that instead.
+    return {"reply": f"You said: {message}"}
 
-def init_db():
-    conn = sqlite3.connect(DB_FILE)
-    cur = conn.cursor()
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE NOT NULL,
-            email TEXT
-        )
-    """)
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS chats (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER,
-            role TEXT,
-            content TEXT,
-            timestamp TEXT,
-            FOREIGN KEY(user_id) REFERENCES users(id)
-        )
-    """)
-    conn.commit()
-    conn.close()
-
-def get_or_create_user(username: str, email: str = None):
-    conn = sqlite3.connect(DB_FILE)
-    cur = conn.cursor()
-    cur.execute("SELECT id FROM users WHERE username = ?", (username,))
-    row = cur.fetchone()
-    if row:
-        user_id = row[0]
-    else:
-        cur.execute("INSERT INTO users (username, email) VALUES (?, ?)", (username, email))
-        conn.commit()
-        user_id = cur.lastrowid
-    conn.close()
-    return user_id
-
-def save_message(user_id: int, role: str, content: str):
-    conn = sqlite3.connect(DB_FILE)
-    cur = conn.cursor()
-    cur.execute(
-        "INSERT INTO chats (user_id, role, content, timestamp) VALUES (?, ?, ?, ?)",
-        (user_id, role, content, datetime.utcnow().isoformat())
-    )
-    conn.commit()
-    conn.close()
-
-def load_chat_history(user_id: int, limit: int = 20):
-    conn = sqlite3.connect(DB_FILE)
-    cur = conn.cursor()
-    cur.execute(
-        "SELECT role, content FROM chats WHERE user_id = ? ORDER BY id DESC LIMIT ?",
-        (user_id, limit)
-    )
-    rows = cur.fetchall()
-    conn.close()
-    return [{"role": role, "content": content} for role, content in reversed(rows)]
-
-def chat_with_gpt(user_id: int):
-    print("Chatbot ready! Type 'exit' to quit.\n")
-    
-    conversation = [{"role": "system", "content": "You are a helpful assistant."}]
-    conversation.extend(load_chat_history(user_id))
-
-    while True:
+# --- User storage helpers ---
+def load_users():
+    if not os.path.exists(USERS_FILE):
+        return {}
+    with open(USERS_FILE, "r", encoding="utf-8") as f:
         try:
-            user_input = input("You: ").strip()
-        except (EOFError, KeyboardInterrupt):
-            print("\nGoodbye!")
-            break
+            return json.load(f)
+        except json.JSONDecodeError:
+            return {}
 
-        if not user_input:
-            continue
-        if user_input.lower() in {"exit", "quit"}:
-            print("Goodbye!")
-            break
+def save_users(users):
+    with open(USERS_FILE, "w", encoding="utf-8") as f:
+        json.dump(users, f, indent=2)
 
-        conversation.append({"role": "user", "content": user_input})
-        save_message(user_id, "user", user_input)
+def get_user(username):
+    users = load_users()
+    return users.get(username)
 
-        try:
-            response = client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=conversation,
-                max_tokens=500
-            )
+# --- Routes ---
+@app.route("/")
+def index():
+    if "username" in session:
+        return redirect(url_for("chat"))
+    return redirect(url_for("login"))
 
-            reply = response.choices[0].message.content.strip()
-            print(f"Bot: {reply}\n")
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
+        if not username or not password:
+            flash("Username and password are required.", "warning")
+            return redirect(url_for("signup"))
 
-            conversation.append({"role": "assistant", "content": reply})
-            save_message(user_id, "assistant", reply)
+        users = load_users()
+        if username in users:
+            flash("Username already exists.", "danger")
+            return redirect(url_for("signup"))
 
-            if len(conversation) > 25:
-                conversation = conversation[:1] + conversation[-24:]
+        users[username] = {
+            "password_hash": generate_password_hash(password)
+        }
+        save_users(users)
+        flash("Signup successful. Please log in.", "success")
+        return redirect(url_for("login"))
 
-        except Exception as e:
-            print(f"Error: {e}")
+    return render_template("signup.html")
 
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
+        user = get_user(username)
+        if not user or not check_password_hash(user.get("password_hash", ""), password):
+            flash("Invalid username or password.", "danger")
+            return redirect(url_for("login"))
+        session["username"] = username
+        flash("Logged in successfully.", "success")
+        return redirect(url_for("chat"))
+    return render_template("login.html")
+
+@app.route("/logout")
+def logout():
+    session.pop("username", None)
+    flash("You have been logged out.", "info")
+    return redirect(url_for("login"))
+
+def login_required(fn):
+    from functools import wraps
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        if "username" not in session:
+            return redirect(url_for("login"))
+        return fn(*args, **kwargs)
+    return wrapper
+
+@app.route("/chat")
+@login_required
+def chat():
+    return render_template("chat.html", username=session.get("username"))
+
+@app.route("/api/chat", methods=["POST"])
+@login_required
+def api_chat():
+    data = request.get_json() or {}
+    message = data.get("message", "")
+    username = session.get("username")
+    if not message:
+        return jsonify({"error": "No message provided."}), 400
+    result = respond_to(message, username=username)
+    return jsonify(result)
 
 if __name__ == "__main__":
-    init_db()
-    username = input("Enter your username: ").strip()
-    email = input("Enter your email (optional): ").strip() or None
-    user_id = get_or_create_user(username, email)
-    chat_with_gpt(user_id)
+    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))

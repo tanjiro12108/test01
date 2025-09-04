@@ -160,35 +160,48 @@
 </div>
 
 <script>
-const input=document.getElementById('chatInput');
-const btn=document.getElementById('sendBtn');
-const messages=document.getElementById('messages');
-const toggle=document.getElementById('modeToggle');
+const input = document.getElementById('chatInput');
+const btn = document.getElementById('sendBtn');
+const messages = document.getElementById('messages');
+const toggle = document.getElementById('modeToggle');
 
-btn.addEventListener('click',()=>{
-  const text=input.value.trim();
-  if(!text)return;
-  const q=document.createElement('div');
-  q.className='q'; q.textContent=text;
+btn.addEventListener('click', async () => {
+  const text = input.value.trim();
+  if (!text) return;
+  const q = document.createElement('div');
+  q.className = 'q';
+  q.textContent = text;
   messages.appendChild(q);
-  messages.scrollTop=messages.scrollHeight;
-  input.value='';
-  
-  setTimeout(()=>{
-    const a=document.createElement('div');
-    a.className='a';
-    a.textContent="🤖 Demo answer. (Connect to OpenAI for real logic)";
+  messages.scrollTop = messages.scrollHeight;
+  input.value = '';
+
+  try {
+    const response = await fetch('http://localhost:5000/ask', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({question: text})
+    });
+    const data = await response.json();
+    const a = document.createElement('div');
+    a.className = 'a';
+    a.textContent = data.answer;
     messages.appendChild(a);
-    messages.scrollTop=messages.scrollHeight;
-  },600);
+    messages.scrollTop = messages.scrollHeight;
+  } catch (e) {
+    const a = document.createElement('div');
+    a.className = 'a';
+    a.textContent = "Error contacting chatbot backend.";
+    messages.appendChild(a);
+    messages.scrollTop = messages.scrollHeight;
+  }
 });
 
-input.addEventListener('keydown',e=>{if(e.key==='Enter')btn.click();});
+input.addEventListener('keydown', e => { if (e.key === 'Enter') btn.click(); });
 
 // Toggle dark mode with switch
-toggle.addEventListener('change',()=>{
+toggle.addEventListener('change', () => {
   document.body.classList.toggle('dark', toggle.checked);
 });
 </script>
 </body>
-</html>
+</html>.

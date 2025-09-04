@@ -78,12 +78,6 @@
 </head>
 <body>
   <h1>Sign Up</h1>
-    {% for category, msg in messages %}
-      <div class="flash {{ category }}">{{ msg }}</div>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
-
   <form method="post" action="{{ url_for('signup') }}">
     <label>Username<br><input name="username" required></label><br><br>
     <label>Password<br><input name="password" type="password" required></label><br><br>
